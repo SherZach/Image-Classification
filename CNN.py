@@ -66,7 +66,7 @@ class CNN(torch.nn.Module):
 cnn = CNN()
 
 # Define optimizer function
-learning_rate = 0.01
+learning_rate = 0.001
 
 optimizer = torch.optim.Adam(
     params=cnn.parameters(),
@@ -95,21 +95,24 @@ def train(model, epochs):
     return(losses) 
 
 def accuracy(model, dataloader):
-    for inputs, labels in dataloader:
-        num_correct = 0
-        num_examples = len(test_data)                       # test DATA not test LOADER
-        for inputs, labels in test_loader:                  # for all exampls, over all mini-batches in the test dataset
-            predictions = model(inputs)
-            predictions = torch.max(predictions, axis=1)    # reduce to find max indices along direction which column varies
-            predictions = predictions[1]                    # torch.max returns (values, indices)
-            num_correct += int(sum(predictions == labels))
-        percent_correct = num_correct / num_examples * 100
-        print('Accuracy:', percent_correct)
+    num_correct = 0
+    num_examples = len(test_data)                       # test DATA not test LOADER
+    for inputs, labels in dataloader:                  # for all exampls, over all mini-batches in the test dataset
+        predictions = model(inputs)
+        predictions = torch.max(predictions, axis=1)    # reduce to find max indices along direction which column varies
+        predictions = predictions[1]                    # torch.max returns (values, indices)
+        num_correct += int(sum(predictions == labels))
+    percent_correct = num_correct / num_examples * 100
+    print('Accuracy:', percent_correct)
 
 
 if __name__ == '__main__':
     # Piece our CNN flow here
-    train(cnn, 1)
-    torch.save(cnn, "trained_model.pt")
+    # train(cnn, 1)
+    # torch.save(cnn, "trained_model.pt")
+    cnn = torch.load("trained_model.pt")
+    accuracy(cnn, valid_loader)
+    accuracy(cnn, test_loader)
+
     
     
